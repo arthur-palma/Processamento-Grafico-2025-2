@@ -1,0 +1,5 @@
+Quando utilizamos essa configuração, os objetos passam a ser posicionados em coordenadas equivalentes 
+aos pixels da tela, com a origem no canto superior esquerdo. Assim, ao desenhar algo em (100,100), 
+ele aparece exatamente 100 pixels à direita e 100 pixels abaixo do canto superior esquerdo. Isso é 
+útil porque facilita o mapeamento entre coordenadas do mundo e da tela, tornando mais simples o 
+desenvolvimento de interfaces e gráficos 2D.

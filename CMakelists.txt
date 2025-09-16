@@ -56,7 +56,11 @@ set(EXERCISES
     Exercicios/Lista1/Ex7
     Exercicios/Lista1/Ex8
     Exercicios/Lista1/Ex9
-    Exercicios/HelloOrtho
+    Exercicios/Lista2/L2Ex1
+    Exercicios/Lista2/L2Ex2
+    Exercicios/Lista2/L2Ex4
+    Exercicios/Lista2/L2Ex5
+    Exercicios/Lista2/L2Ex6
     Exercicios/HelloTransforms
 )
 

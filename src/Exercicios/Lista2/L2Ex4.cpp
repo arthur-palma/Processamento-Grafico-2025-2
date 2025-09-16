@@ -5,10 +5,8 @@
 
 using namespace std;
 
-// GLAD
 #include <glad/glad.h>
 
-// GLFW
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -17,31 +15,27 @@ using namespace std;
 
 using namespace glm;
 
-// Protótipo da função de callback de teclado
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 
-// Protótipos das funções
 int setupShader();
 int setupGeometry();
 
-// Dimensões da janela (pode ser alterado em tempo de execução)
 const GLuint WIDTH = 800, HEIGHT = 600;
 
-// Código fonte do Vertex Shader (em GLSL): ainda hardcoded
 const GLchar *vertexShaderSource = R"(
  #version 400
  layout (location = 0) in vec3 position;
  layout (location = 1) in vec3 color;
  uniform mat4 projection;
+ uniform mat4 model;
  out vec3 vColor;
  void main()
  {
-	 gl_Position = projection * vec4(position.x, position.y, position.z, 1.0);
+	 gl_Position = projection * model * vec4(position.x, position.y, position.z, 1.0);
     vColor = color;
  }
  )";
 
-// Código fonte do Fragment Shader (em GLSL): ainda hardcoded
 const GLchar *fragmentShaderSource = R"(
  #version 400
  in vec3 vColor;
@@ -53,7 +47,7 @@ const GLchar *fragmentShaderSource = R"(
  }
  )";
 
-// Função MAIN
+
 int main()
 {
 	glfwInit();
@@ -82,8 +76,8 @@ int main()
 		return -1;
 	}
 
-	const GLubyte *renderer = glGetString(GL_RENDERER); /* get renderer string */
-	const GLubyte *version = glGetString(GL_VERSION);	/* version as a string */
+	const GLubyte *renderer = glGetString(GL_RENDERER); 
+	const GLubyte *version = glGetString(GL_VERSION);	
 	cout << "Renderer: " << renderer << endl;
 	cout << "OpenGL version supported " << version << endl;
 
@@ -94,65 +88,59 @@ int main()
 
 	GLint colorLoc = glGetUniformLocation(shaderID, "inputColor");
 
-	glUseProgram(shaderID); // Reseta o estado do shader para evitar problemas futuros
+	glUseProgram(shaderID); 
 
-	double prev_s = glfwGetTime();	// Define o "tempo anterior" inicial.
-	double title_countdown_s = 0.1; // Intervalo para atualizar o título da janela com o FPS.
+	double prev_s = glfwGetTime();	
+	double title_countdown_s = 0.1; 
 
 
-    //Criando a matriz de projeção ortográfica
-    mat4 projection = ortho(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 1.0f);
+    mat4 projection = ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
     
-    //Enviando a matriz de projeção para o vertex shader
     glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, value_ptr(projection));
 
 
-	// Loop da aplicação - "game loop"
 	while (!glfwWindowShouldClose(window))
 	{
-		// Este trecho de código é totalmente opcional: calcula e mostra a contagem do FPS na barra de título
 		{
-			double curr_s = glfwGetTime();		// Obtém o tempo atual.
-			double elapsed_s = curr_s - prev_s; // Calcula o tempo decorrido desde o último frame.
-			prev_s = curr_s;					// Atualiza o "tempo anterior" para o próximo frame.
+			double curr_s = glfwGetTime();		
+			double elapsed_s = curr_s - prev_s; 
+			prev_s = curr_s;					
 
-			// Exibe o FPS, mas não a cada frame, para evitar oscilações excessivas.
 			title_countdown_s -= elapsed_s;
 			if (title_countdown_s <= 0.0 && elapsed_s > 0.0)
 			{
-				double fps = 1.0 / elapsed_s; // Calcula o FPS com base no tempo decorrido.
+				double fps = 1.0 / elapsed_s; 
 
-				// Cria uma string e define o FPS como título da janela.
+				
 				char tmp[256];
 				sprintf(tmp, "Ortho \tFPS %.2lf", fps);
 				glfwSetWindowTitle(window, tmp);
 
-				title_countdown_s = 0.1; // Reinicia o temporizador para atualizar o título periodicamente.
+				title_countdown_s = 0.1; 
 			}
 		}
 
-		// Checa se houveram eventos de input (key pressed, mouse moved etc.) e chama as funções de callback correspondentes
 		glfwPollEvents();
 
-		// Limpa o buffer de cor
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // cor de fundo
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glLineWidth(10);
 		glPointSize(10);
 
-        // Definindo as dimensões da viewport com as mesmas dimensões da janela da aplicação
-        // 03/09
 	    int width, height;
 	    glfwGetFramebufferSize(window, &width, &height);
 	    glViewport(400, 300 , 400, 300);
 
-		glBindVertexArray(VAO); // Conectando ao buffer de geometria
+		glBindVertexArray(VAO); 
 
-		glUniform4f(colorLoc, 0.0f, 0.0f, 1.0f, 1.0f); // enviando cor para variável uniform inputColor
+		mat4 model = mat4(1.0f);
+		model = translate(model, vec3(400.0f, 300.0f, 0.0f));
+		model = scale(model, vec3(400.0f, 400.0f, 1.0f)); 
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, value_ptr(model));
 
-		// Chamada de desenho - drawcall
-		// Poligono Preenchido - GL_TRIANGLES
+		glUniform4f(colorLoc, 0.0f, 0.0f, 1.0f, 1.0f);
+
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glUniform4f(colorLoc, 1.0f, 0.0f, 0.0f, 1.0f);
 		glDrawArrays(GL_LINE_LOOP, 0, 6);
@@ -161,20 +149,14 @@ int main()
 		
 		// glBindVertexArray(0); // Desnecessário aqui, pois não há múltiplos VAOs
 
-		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}
-	// Pede pra OpenGL desalocar os buffers
 
 	glDeleteVertexArrays(1, &VAO);
-	// Finaliza a execução da GLFW, limpando os recursos alocados por ela
 	glfwTerminate();
 	return 0;
 }
 
-// Função de callback de teclado - só pode ter uma instância (deve ser estática se
-// estiver dentro de uma classe) - É chamada sempre que uma tecla for pressionada
-// ou solta via GLFW
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -184,11 +166,9 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
 int setupShader()
 {
-	// Vertex shader
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
-	// Checando erros de compilação (exibição via log no terminal)
 	GLint success;
 	GLchar infoLog[512];
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -198,11 +178,9 @@ int setupShader()
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
 				  << infoLog << std::endl;
 	}
-	// Fragment shader
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
-	// Checando erros de compilação (exibição via log no terminal)
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
@@ -210,12 +188,10 @@ int setupShader()
 		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
 				  << infoLog << std::endl;
 	}
-	// Linkando os shaders e criando o identificador do programa de shader
 	GLuint shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
-	// Checando por erros de linkagem
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success)
 	{
@@ -232,46 +208,33 @@ int setupShader()
 
 int setupGeometry()
 {
-	// Um array de floats com os vértices que formam um triângulo
 	GLfloat vertices[] = {
-		// x   y     z  r g b
-		// T0
-		0.0,  0.0, 0.0, 1.0, 0.0, 0.0,  // v0
-		-0.5, 0.5, 0.0, 0.0, 1.0, 0.0,	// v1
-		-0.5, -0.5, 0.0, 0., 0.0, 1.0,	// v2
-		// T1
-        0.0, 0.0, 0.0, 1.0, 1.0, 0.0,	   // v3
-		0.5, -0.5, 0.0, 0.0, 1.0, 1.0,	   // v4
-		0.5, 0.5, 0.0,  1.0, 0.0, 1.0,     // v5
+		0.0,  0.0, 0.0, 1.0, 0.0, 0.0, 
+		-0.5, 0.5, 0.0, 0.0, 1.0, 0.0,	
+		-0.5, -0.5, 0.0, 0., 0.0, 1.0,	
+
+        0.0, 0.0, 0.0, 1.0, 1.0, 0.0,	   
+		0.5, -0.5, 0.0, 0.0, 1.0, 1.0,	   
+		0.5, 0.5, 0.0,  1.0, 0.0, 1.0,    
 	};
 
 	GLuint VBO, VAO;
-	// Geração do identificador do VBO
 	glGenBuffers(1, &VBO);
-	// Faz a conexão (vincula) do buffer como um buffer de array
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// Envia os dados do array de floats para o buffer da OpenGl
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// Geração do identificador do VAO (Vertex Array Object)
 	glGenVertexArrays(1, &VAO);
-	// Vincula (bind) o VAO primeiro, e em seguida  conecta e seta o(s) buffer(s) de vértices
-	// e os ponteiros para os atributos
 	glBindVertexArray(VAO);
 	
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)0);
 	glEnableVertexAttribArray(0);
 
-    //Cor
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GL_FLOAT)));
 	glEnableVertexAttribArray(1);
 
 
-	// Observe que isso é permitido, a chamada para glVertexAttribPointer registrou o VBO como o objeto de buffer de vértice
-	// atualmente vinculado - para que depois possamos desvincular com segurança
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// Desvincula o VAO (é uma boa prática desvincular qualquer buffer ou array para evitar bugs medonhos)
 	glBindVertexArray(0);
 
 	return VAO;
