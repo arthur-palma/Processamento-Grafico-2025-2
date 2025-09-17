@@ -45,36 +45,6 @@ Após a geração, extraia os arquivos baixados e coloque-os nos diretórios cor
 
 🚨 **Sem esses arquivos, a compilação falhará!** É necessário colocar esses arquivos nos diretórios corretos, conforme a orientação acima.
 
----
-
-## 📚 Sugestão de Estrutura para seu próprio repositório
-
-Recomendamos que você crie um repositório próprio, estruturado com subdiretórios dentro de `src`, para organizar suas atividades da disciplina:
-
-```
-📁 PG2025-2/
-├── 📁 src/
-│   ├── 📁 Lista1/
-│   │   ├── Ex1.cpp
-│   │   ├── Ex2.cpp
-│   │   ├── ...
-│   │   └── README.md
-│   ├── 📁 Lista2/
-│   │   ├── Ex1.cpp
-│   │   ├── ...
-│   │   └── README.md
-│   ├── 📁 TrabalhoGrauA/
-│   │   ├── main.cpp
-│   │   └── README.md
-│   ├── 📁 ...
-├── 📁 include/   # Cabeçalhos comuns (se necessário)
-├── 📁 common/    # Arquivos comuns (como glad.c)
-├── 📄 CMakeLists.txt
-└── 📄 README.md
-```
-
-> Cada diretório dentro de `src/` pode conter um arquivo `README.md` com informações específicas sobre a atividade ou exercício implementado.
-
 Consulte os seguintes materiais para ajuda adicional:
 - [Tutorial de Entregas pelo Github](TutorialEntregasGithub.pdf)
 - [Organizando seu repositório no Github](OrganizandoRepositorioGithub.pdf)
