@@ -45,8 +45,4 @@ Após a geração, extraia os arquivos baixados e coloque-os nos diretórios cor
 
 🚨 **Sem esses arquivos, a compilação falhará!** É necessário colocar esses arquivos nos diretórios corretos, conforme a orientação acima.
 
-Consulte os seguintes materiais para ajuda adicional:
-- [Tutorial de Entregas pelo Github](TutorialEntregasGithub.pdf)
-- [Organizando seu repositório no Github](OrganizandoRepositorioGithub.pdf)
-
 
